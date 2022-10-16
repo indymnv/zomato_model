@@ -113,7 +113,27 @@ plot(rfMachine)
 MLJ.save("rf_regressor.jls", rfMachine)
 
 # ╔═╡ 4346287b-fbf8-4f7c-b61e-ae012be7e3dd
-rfMachine.model
+y_pred = predict(rfMachine, rows= test)
+
+# ╔═╡ 4355a565-3212-42ae-8e14-d3d726a54093
+begin
+	histogram(y_pred, label = "Prediction")
+	histogram!(y[test,:] , label = "real")
+	
+end
+
+# ╔═╡ dae0a705-de79-41e0-8f07-3d00650b9e4c
+histogram((y_pred- y[test,:]), label = "residuals")
+
+# ╔═╡ c4dc2389-edb5-4318-9636-c1687b9d8e6d
+scatter((y_pred- y[test,:]), label = "residuals")
+
+# ╔═╡ 8da1d62b-0258-40ea-87e8-b88a3ec612ce
+scatter((y_pred, y[test,:]), label = "residuals")
+
+# ╔═╡ 50f06b2e-b0c0-4b3d-8438-0b3fa609e691
+rfMachine.best_model()
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1461,5 +1481,10 @@ version = "1.4.1+0"
 # ╠═78947314-1734-4f46-bbd5-fda2454406b1
 # ╠═37da949b-876c-4921-9783-faef99009d57
 # ╠═4346287b-fbf8-4f7c-b61e-ae012be7e3dd
+# ╠═4355a565-3212-42ae-8e14-d3d726a54093
+# ╠═dae0a705-de79-41e0-8f07-3d00650b9e4c
+# ╠═c4dc2389-edb5-4318-9636-c1687b9d8e6d
+# ╠═8da1d62b-0258-40ea-87e8-b88a3ec612ce
+# ╠═50f06b2e-b0c0-4b3d-8438-0b3fa609e691
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
