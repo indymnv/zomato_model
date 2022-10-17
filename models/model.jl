@@ -33,11 +33,11 @@ df_coerce = coerce(dfx,
 	   #:Restaurant_ID => Multiclass,
 	   :Country_Code => OrderedFactor,
 	   :City => OrderedFactor,
-	   :Cuisines => Multiclass,
-	   :Currency => Multiclass,
-	   :Has_Table_booking => Multiclass,
-	   :Has_Online_delivery => Multiclass,
-	   :Is_delivering_now => Multiclass,
+	   :Cuisines => OrderedFactor, #Replace Multiclass
+	   :Currency => OrderedFactor,
+	   :Has_Table_booking => OrderedFactor,
+	   :Has_Online_delivery => OrderedFactor,
+	   :Is_delivering_now => OrderedFactor,
 	   )
 
 # ╔═╡ 3f7d1456-c1de-436f-962d-509e9fc7d63a
@@ -45,6 +45,9 @@ schema(df_coerce)
 
 # ╔═╡ a751ddb2-16c8-4a00-9c8a-d03a5bb417c4
 y, X = unpack(df_coerce, ==(:Aggregate_rating); rng=123)
+
+# ╔═╡ 21c03b6d-a5a3-4e85-b83b-f6217163d084
+X
 
 # ╔═╡ d92c1502-5e0b-4670-964a-4cfbfa5a52ed
 train, test = partition(eachindex(y), 0.7, shuffle=true)
@@ -123,7 +126,11 @@ begin
 end
 
 # ╔═╡ dae0a705-de79-41e0-8f07-3d00650b9e4c
-histogram((y_pred- y[test,:]), label = "residuals")
+plot(
+	histogram((y_pred- y[test,:]), label = "residuals"),
+	scatter((y_pred- y[test,:]), label = "residuals"),
+
+)
 
 # ╔═╡ c4dc2389-edb5-4318-9636-c1687b9d8e6d
 scatter((y_pred- y[test,:]), label = "residuals")
@@ -132,8 +139,21 @@ scatter((y_pred- y[test,:]), label = "residuals")
 scatter((y_pred, y[test,:]), label = "residuals")
 
 # ╔═╡ 50f06b2e-b0c0-4b3d-8438-0b3fa609e691
-rfMachine.best_model()
+mach_predict_only = machine("rf_regressor.jls")
 
+
+# ╔═╡ bcafffca-44be-4a4a-b54a-cdd7e16bdae9
+size(X_encoded)
+
+# ╔═╡ 862c5191-2c55-496e-8274-9d2f8268de96
+row_test = DataFrame([:Country_code =>191,	:City =>"Colombo",	:Longitude =>79.8501
+, :Latitude=>6.91054, :Average_Cost_for_two =>	"Desserts, Ice Cream",	:Currency =>1000, :Has_Table_booking =>	"Sri Lankan Rupee(LKR)", 	"No"	"No"	"No"	2	122], :auto)
+
+# ╔═╡ 4f4f51d7-3825-4369-9e70-8e9cdfe090ec
+schema(X_encoded)
+
+# ╔═╡ e76719f6-18a2-4c1d-b2c2-3b7f5b66ffe5
+#predict(mach_predict_only, row_test)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1474,6 +1494,7 @@ version = "1.4.1+0"
 # ╠═8d1b0043-5d69-4b78-98e3-539a9800ba31
 # ╠═3f7d1456-c1de-436f-962d-509e9fc7d63a
 # ╠═a751ddb2-16c8-4a00-9c8a-d03a5bb417c4
+# ╠═21c03b6d-a5a3-4e85-b83b-f6217163d084
 # ╠═d92c1502-5e0b-4670-964a-4cfbfa5a52ed
 # ╠═b3f2a6f4-3b4d-4139-9b1c-52ff115d4d27
 # ╠═00f238e3-26eb-42cf-b7d5-42d09ba8ab01
@@ -1486,5 +1507,9 @@ version = "1.4.1+0"
 # ╠═c4dc2389-edb5-4318-9636-c1687b9d8e6d
 # ╠═8da1d62b-0258-40ea-87e8-b88a3ec612ce
 # ╠═50f06b2e-b0c0-4b3d-8438-0b3fa609e691
+# ╠═bcafffca-44be-4a4a-b54a-cdd7e16bdae9
+# ╠═862c5191-2c55-496e-8274-9d2f8268de96
+# ╠═4f4f51d7-3825-4369-9e70-8e9cdfe090ec
+# ╠═e76719f6-18a2-4c1d-b2c2-3b7f5b66ffe5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
