@@ -12,6 +12,7 @@ begin
 	#using CairoMakie
 	#using UnicodePlots
 	using StatsPlots
+	theme(:ggplot2)
 end
 
 # ╔═╡ 4734f244-dce9-4638-90f8-f8d316847075
@@ -83,8 +84,41 @@ boxplot(df."Votes"   )
 # ╔═╡ 9ef7c2bc-bdcf-437d-b132-167e6156e489
 @df df groupedhist(:Aggregate_rating, group = :Has_Online_delivery, bar_position = :dodge)
 
-# ╔═╡ 63fdf665-9e62-4937-b186-f864d1dbe350
-@df df marginalscatter(:Latitude, :Longitude)
+# ╔═╡ d16e984d-f51d-4be0-bdeb-c6765fac1fac
+df.has_vote =  @. ifelse(df.Aggregate_rating == 0, "no", "yes"); df
+
+# ╔═╡ 003e0b16-77ed-4344-af39-a97fad650d14
+combine(groupby(df, [:"has_vote"]), proprow => :count)
+
+# ╔═╡ c698861b-6068-4a90-868b-a7a0fc63a2a8
+@df df histogram(df."Price_range", group = :has_vote  ) #Histogram var of study
+
+# ╔═╡ 45a78ac1-01dc-4c77-968a-cdc46a94bcb9
+@df df scatter(df."Latitude", df."Longitude", group = :has_vote  )
+
+# ╔═╡ 0036e900-98f8-45c7-b983-13b95c661605
+@df df scatter(df."Latitude", df."Longitude", group = :Country_Code  )
+
+# ╔═╡ 942b6793-365f-40d9-a486-a0800f2f2711
+@df df scatter(df."Latitude", df."Longitude", group = :Currency	  )
+
+# ╔═╡ 6755618c-9d74-4608-8492-31ddfa88da09
+@df df scatter(df."Latitude", df."Longitude", group = :Has_Table_booking	  )	
+
+# ╔═╡ e265b7d9-9424-4abf-a46b-312556c6e412
+@df df scatter(df."Latitude", df."Longitude", group = :Has_Online_delivery	  )	
+
+# ╔═╡ 7d9ac12d-cdb5-411b-ac09-a6a8824284d4
+@df df scatter(df."Latitude", df."Longitude", group = :Is_delivering_now	  )	
+
+# ╔═╡ 6d93453b-c946-42cf-87bb-cda8d5f31a28
+@df df scatter(df."Latitude", df."Longitude", group = :Price_range	  )
+
+# ╔═╡ 2978f34a-96b6-4cde-b104-e0f2be6f7930
+@df df scatter(df."Latitude", df."Longitude", group = :Rating_text	  )
+
+# ╔═╡ 99019ffd-383e-44a9-9cd3-2c80a7904660
+filter(:has_vote => isequal("no"), df)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -107,7 +141,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "827491ee13aebc56df49e7ae4eec2b126f62e58f"
+project_hash = "4499ea960cce9b3a343c306f79efa860ad8b0281"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -301,9 +335,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.Distributions]]
 deps = ["ChainRulesCore", "DensityInterface", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SparseArrays", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns", "Test"]
-git-tree-sha1 = "0d7d213133d948c56e8c2d9f4eab0293491d8e4a"
+git-tree-sha1 = "04db820ebcfc1e053bd8cbb8d8bccf0ff3ead3f7"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.75"
+version = "0.25.76"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -363,9 +397,9 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays", "Statistics"]
-git-tree-sha1 = "87519eb762f85534445f5cda35be12e32759ee14"
+git-tree-sha1 = "802bfc139833d2ba893dd9e62ba1767c88d708ae"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "0.13.4"
+version = "0.13.5"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -409,9 +443,9 @@ version = "3.3.8+0"
 
 [[deps.GR]]
 deps = ["Base64", "DelimitedFiles", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Pkg", "Preferences", "Printf", "Random", "Serialization", "Sockets", "Test", "UUIDs"]
-git-tree-sha1 = "cf7bf90e483228f6c988e474b420064e5351b892"
+git-tree-sha1 = "00a9d4abadc05b9476e937a5557fcce476b9e547"
 uuid = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
-version = "0.69.4"
+version = "0.69.5"
 
 [[deps.GR_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Pkg", "Qt5Base_jll", "Zlib_jll", "libpng_jll"]
@@ -444,9 +478,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "Dates", "IniFile", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "4abede886fcba15cd5fd041fef776b230d004cee"
+git-tree-sha1 = "3cdd8948c55d8b53b5323f23c9581555dc2e30e1"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.4.0"
+version = "1.5.0"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
@@ -467,9 +501,9 @@ version = "0.5.1"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
-git-tree-sha1 = "d0ca109edbae6b4cc00e751a29dcb15a124053d6"
+git-tree-sha1 = "db619c421554e1e7e07491b85a8f4b96b3f04ca0"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
-version = "1.2.0"
+version = "1.2.2"
 
 [[deps.IntelOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -662,9 +696,9 @@ version = "0.4.9"
 
 [[deps.MKL_jll]]
 deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
-git-tree-sha1 = "41d162ae9c868218b1f3fe78cba878aa348c2d26"
+git-tree-sha1 = "2ce8695e1e699b68702c03402672a69f54b8aca9"
 uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
-version = "2022.1.0+0"
+version = "2022.2.0+0"
 
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
@@ -734,9 +768,9 @@ version = "0.5.2"
 
 [[deps.OffsetArrays]]
 deps = ["Adapt"]
-git-tree-sha1 = "1ea784113a6aa054c5ebd95945fa5e52c2f378e7"
+git-tree-sha1 = "f71d8950b724e9ff6110fc948dff5a329f901d64"
 uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
-version = "1.12.7"
+version = "1.12.8"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -756,9 +790,9 @@ version = "0.8.1+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
-git-tree-sha1 = "ebe81469e9d7b471d7ddb611d9e147ea16de0add"
+git-tree-sha1 = "3c3c4a401d267b04942545b1e964a20279587fd7"
 uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
-version = "1.2.1"
+version = "1.3.0"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -796,9 +830,9 @@ version = "0.11.16"
 
 [[deps.Parsers]]
 deps = ["Dates"]
-git-tree-sha1 = "595c0b811cf2bab8b0849a70d9bd6379cc1cfb52"
+git-tree-sha1 = "6c01a9b494f6d2a9fc180a08b182fcb06f0958a0"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.4.1"
+version = "2.4.2"
 
 [[deps.Pipe]]
 git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
@@ -818,9 +852,9 @@ version = "1.8.0"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
-git-tree-sha1 = "8162b2f8547bc23876edd0c5181b27702ae58dce"
+git-tree-sha1 = "1f03a2d339f42dca4a4da149c7e15e9b896ad899"
 uuid = "ccf2f8ad-2431-5c83-bf29-c5338b663b6a"
-version = "3.0.0"
+version = "3.1.0"
 
 [[deps.PlotUtils]]
 deps = ["ColorSchemes", "Colors", "Dates", "Printf", "Random", "Reexport", "SnoopPrecompile", "Statistics"]
@@ -884,9 +918,9 @@ version = "0.4.3"
 
 [[deps.RecipesBase]]
 deps = ["SnoopPrecompile"]
-git-tree-sha1 = "612a4d76ad98e9722c8ba387614539155a59e30c"
+git-tree-sha1 = "d12e612bba40d189cead6ff857ddb67bd2e6a387"
 uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-version = "1.3.0"
+version = "1.3.1"
 
 [[deps.RecipesPipeline]]
 deps = ["Dates", "NaNMath", "PlotUtils", "RecipesBase", "SnoopPrecompile"]
@@ -935,9 +969,9 @@ version = "1.1.1"
 
 [[deps.SentinelArrays]]
 deps = ["Dates", "Random"]
-git-tree-sha1 = "c0f56940fc967f3d5efed58ba829747af5f8b586"
+git-tree-sha1 = "efd23b378ea5f2db53a55ae53d3133de4e080aa9"
 uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-version = "1.3.15"
+version = "1.3.16"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -1048,9 +1082,9 @@ version = "1.0.1"
 
 [[deps.Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "OrderedCollections", "TableTraits", "Test"]
-git-tree-sha1 = "2d7164f7b8a066bcfa6224e67736ce0eb54aef5b"
+git-tree-sha1 = "c79322d36826aa2f4fd8ecfa96ddb47b174ac78d"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
@@ -1365,6 +1399,17 @@ version = "1.4.1+0"
 # ╠═6dd67441-a101-44e9-9dfd-173580e0ab7f
 # ╠═971e4dd9-f9e7-42d2-8795-58cfe3665f4f
 # ╠═9ef7c2bc-bdcf-437d-b132-167e6156e489
-# ╠═63fdf665-9e62-4937-b186-f864d1dbe350
+# ╠═d16e984d-f51d-4be0-bdeb-c6765fac1fac
+# ╠═003e0b16-77ed-4344-af39-a97fad650d14
+# ╠═c698861b-6068-4a90-868b-a7a0fc63a2a8
+# ╠═45a78ac1-01dc-4c77-968a-cdc46a94bcb9
+# ╠═0036e900-98f8-45c7-b983-13b95c661605
+# ╠═942b6793-365f-40d9-a486-a0800f2f2711
+# ╠═6755618c-9d74-4608-8492-31ddfa88da09
+# ╠═e265b7d9-9424-4abf-a46b-312556c6e412
+# ╠═7d9ac12d-cdb5-411b-ac09-a6a8824284d4
+# ╠═6d93453b-c946-42cf-87bb-cda8d5f31a28
+# ╠═2978f34a-96b6-4cde-b104-e0f2be6f7930
+# ╠═99019ffd-383e-44a9-9cd3-2c80a7904660
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
