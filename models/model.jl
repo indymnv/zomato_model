@@ -14,22 +14,21 @@ begin
 end
 
 # ╔═╡ 662b1234-f417-4bfb-aabc-ffe9fe003b2c
-df = CSV.read("/Users/indynavarro/Desktop/projects/zomato_rating/data/zomato.csv", 
+begin
+	df = CSV.read("/Users/indynavarro/Desktop/projects/zomato_rating/data/zomato.csv", 
 	     DataFrame,
 	     normalizenames=true)
-
-# ╔═╡ 5665d7a0-8fae-4d86-9924-3fffca7cde66
-list_names = [ "Country_Code", "City", "Longitude", "Latitude",
+	list_names = [ "Country_Code", "City", "Longitude", "Latitude",
 	     "Cuisines", "Average_Cost_for_two", "Currency", "Has_Table_booking",
 	     "Has_Online_delivery", "Is_delivering_now",
 	     "Price_range", "Votes", "Aggregate_rating"]
+	dfx = df[:,list_names]
 
-
-# ╔═╡ 543f0acd-03f2-4874-986a-aaf6a721654f
-dfx = df[:,list_names]
+end
 
 # ╔═╡ 8d1b0043-5d69-4b78-98e3-539a9800ba31
-df_coerce = coerce(dfx,
+begin
+	df_coerce = coerce(dfx,
 	   #:Restaurant_ID => Multiclass,
 	   :Country_Code => OrderedFactor,
 	   :City => OrderedFactor,
@@ -39,18 +38,11 @@ df_coerce = coerce(dfx,
 	   :Has_Online_delivery => OrderedFactor,
 	   :Is_delivering_now => OrderedFactor,
 	   )
-
-# ╔═╡ 3f7d1456-c1de-436f-962d-509e9fc7d63a
-schema(df_coerce)
-
-# ╔═╡ a751ddb2-16c8-4a00-9c8a-d03a5bb417c4
-y, X = unpack(df_coerce, ==(:Aggregate_rating); rng=123)
-
-# ╔═╡ 21c03b6d-a5a3-4e85-b83b-f6217163d084
-X
-
-# ╔═╡ d92c1502-5e0b-4670-964a-4cfbfa5a52ed
-train, test = partition(eachindex(y), 0.7, shuffle=true)
+	
+	y, X = unpack(df_coerce, ==(:Aggregate_rating); rng=123)
+	
+	train, test = partition(eachindex(y), 0.7, shuffle=true)
+end
 
 # ╔═╡ b3f2a6f4-3b4d-4139-9b1c-52ff115d4d27
 begin
@@ -135,9 +127,6 @@ plot(
 # ╔═╡ c4dc2389-edb5-4318-9636-c1687b9d8e6d
 scatter((y_pred- y[test,:]), label = "residuals")
 
-# ╔═╡ 8da1d62b-0258-40ea-87e8-b88a3ec612ce
-scatter((y_pred, y[test,:]), label = "residuals")
-
 # ╔═╡ 50f06b2e-b0c0-4b3d-8438-0b3fa609e691
 mach_predict_only = machine("rf_regressor.jls")
 
@@ -145,15 +134,28 @@ mach_predict_only = machine("rf_regressor.jls")
 # ╔═╡ bcafffca-44be-4a4a-b54a-cdd7e16bdae9
 size(X_encoded)
 
-# ╔═╡ 862c5191-2c55-496e-8274-9d2f8268de96
-row_test = DataFrame([:Country_code =>191,	:City =>"Colombo",	:Longitude =>79.8501
-, :Latitude=>6.91054, :Average_Cost_for_two =>	"Desserts, Ice Cream",	:Currency =>1000, :Has_Table_booking =>	"Sri Lankan Rupee(LKR)", 	"No"	"No"	"No"	2	122], :auto)
-
 # ╔═╡ 4f4f51d7-3825-4369-9e70-8e9cdfe090ec
 schema(X_encoded)
 
 # ╔═╡ e76719f6-18a2-4c1d-b2c2-3b7f5b66ffe5
-#predict(mach_predict_only, row_test)
+predict(mach_predict_only, X_encoded)
+
+# ╔═╡ dc1fd739-2692-42a5-9e97-db81857ba40a
+MLJ.save("encoder.jls", encMach)
+
+# ╔═╡ 852c924f-3096-40ba-b646-f556819f2199
+enc_predict_only = machine("encoder.jls")
+
+# ╔═╡ 1bf04f95-b56d-436f-9265-45ed51777ec2
+df_test = first(X)
+
+
+# ╔═╡ 11530208-d1c1-414b-bf0c-cce0756be0e2
+
+df_test_transformed = MLJ.transform(enc_predict_only, df_test)
+
+# ╔═╡ 3dcd6996-793e-4090-8d82-3b03c8d2916d
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1489,13 +1491,7 @@ version = "1.4.1+0"
 # ╔═╡ Cell order:
 # ╠═a1381dd2-4912-11ed-243b-15d76f8987b5
 # ╠═662b1234-f417-4bfb-aabc-ffe9fe003b2c
-# ╠═5665d7a0-8fae-4d86-9924-3fffca7cde66
-# ╠═543f0acd-03f2-4874-986a-aaf6a721654f
 # ╠═8d1b0043-5d69-4b78-98e3-539a9800ba31
-# ╠═3f7d1456-c1de-436f-962d-509e9fc7d63a
-# ╠═a751ddb2-16c8-4a00-9c8a-d03a5bb417c4
-# ╠═21c03b6d-a5a3-4e85-b83b-f6217163d084
-# ╠═d92c1502-5e0b-4670-964a-4cfbfa5a52ed
 # ╠═b3f2a6f4-3b4d-4139-9b1c-52ff115d4d27
 # ╠═00f238e3-26eb-42cf-b7d5-42d09ba8ab01
 # ╠═22b07ef6-ae46-4e6b-ae42-57e1e5ea79b8
@@ -1505,11 +1501,14 @@ version = "1.4.1+0"
 # ╠═4355a565-3212-42ae-8e14-d3d726a54093
 # ╠═dae0a705-de79-41e0-8f07-3d00650b9e4c
 # ╠═c4dc2389-edb5-4318-9636-c1687b9d8e6d
-# ╠═8da1d62b-0258-40ea-87e8-b88a3ec612ce
 # ╠═50f06b2e-b0c0-4b3d-8438-0b3fa609e691
 # ╠═bcafffca-44be-4a4a-b54a-cdd7e16bdae9
-# ╠═862c5191-2c55-496e-8274-9d2f8268de96
 # ╠═4f4f51d7-3825-4369-9e70-8e9cdfe090ec
 # ╠═e76719f6-18a2-4c1d-b2c2-3b7f5b66ffe5
+# ╠═dc1fd739-2692-42a5-9e97-db81857ba40a
+# ╠═852c924f-3096-40ba-b646-f556819f2199
+# ╠═1bf04f95-b56d-436f-9265-45ed51777ec2
+# ╠═11530208-d1c1-414b-bf0c-cce0756be0e2
+# ╠═3dcd6996-793e-4090-8d82-3b03c8d2916d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
