@@ -3,6 +3,7 @@ using CSV
 using MLJ
 using MLJDecisionTreeInterface
 using Plots
+using FileIO
 
 function get_cleaned_data()
     df = CSV.read("./data/zomato.csv", 
@@ -19,9 +20,7 @@ end
 
 df = get_cleaned_data()
 #Assign Multiclass type
-y, X = unpack(df, ==(:Aggregate_rating); rng=123)
 
-train, test = partition(eachindex(y), 0.7, shuffle=true)
 
 df = coerce(df,
 	   #:Restaurant_ID => Multiclass,
@@ -34,27 +33,41 @@ df = coerce(df,
 	   :Is_delivering_now => OrderedFactor,
 	   )
 
+y, X = unpack(df, ==(:Aggregate_rating); rng=123)
+
+train, test = partition(eachindex(y), 0.7, shuffle=true)   
+
 encoder = ContinuousEncoder()
 encMach = machine(encoder, X) |> fit!
 X_encoded = MLJ.transform(encMach, X)
 
 rf = @load RandomForestRegressor pkg=DecisionTree
 
-max_depth_range = range( rf,  :max_depth, lower = 1, upper = 30)
+max_depth_range = range( rf(),  :max_depth, lower = 1, upper = 30)
+n_trees_range = range(rf(), :n_trees, lower=9, upper=15)
 
-lmTuneModel = TunedModel(model=rf,
-                          resampling = CV(nfolds=3, shuffle=true),
+lmTuneModel = TunedModel(model=rf(),
+                          resampling = CV(nfolds=6, shuffle=true),
                           tuning = Grid(resolution=25),
-                          range = [max_depth_range],
+                          range = [max_depth_range, n_trees_range],
                           measures=[mae, rms, rsquared]);
 
-dtMachine = machine(rf(), X_encoded, y)
+dtMachine = machine(lmTuneModel, X_encoded, y)
 fit!(dtMachine, rows=train, verbosity=0)
-
-evaluate!(dtMachine, rows = train, resampling=CV(nfolds=3), measures=[mae, rms, rsquared],
+evaluate!(dtMachine, rows = train,
 	  verbosity=0)
 
 
 plot(dtMachine)
 
-MLJ.Save("./models/rf_regressor.jls", dtMachine)
+y_pred = predict(dtMachine, rows= test)
+
+plot(
+	histogram((y_pred- y[test,:]), label = "residuals"),
+	scatter((y_pred- y[test,:]), label = "residuals"),
+
+)
+
+dtMachine
+
+MLJ.save("./models/rf_regressor.jls", dtMachine)
